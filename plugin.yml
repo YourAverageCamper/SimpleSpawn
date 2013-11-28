@@ -1,0 +1,8 @@
+name: Spawn
+version: 1.0
+main: com.zeusallmighty11.Spawn.Spawn
+commands:
+    hub:
+        description: Teleports to hub
+    setspawn:
+        description: Sets spawn
