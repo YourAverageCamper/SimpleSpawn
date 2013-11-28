@@ -1,9 +1,42 @@
 # Default Config
-location:
-    x: 0.00
-    y: 0.00
-    z: 0.00
-    pitch: 0.0
-    yaw: 0.0
-    world: 'world'
-message: '&aWelcome to the hub!'
+locations:
+    'spawn':
+        message: '&aWelcome to the hub!'
+        permission: 'spawn.spawn'
+        commands:
+        - '/hub'
+        - '/spawn'
+        - '/server'
+        location:
+            x: 0.00
+            y: 0.00
+            z: 0.00
+            pitch: 0.0
+            yaw: 0.0
+            world: 'world'
+    'factions':
+        message: '&3Battle it out in the Factions!'
+        permission: 'spawn.factions'
+        commands:
+        - '/factions'
+        location:
+            x: 0.00
+            y: 0.00
+            z: 0.00
+            pitch: 0.0
+            yaw: 0.0
+            world: 'world'
+    'creative':
+        message: '&dGet creative! Build your imagination!'
+        permission: 'spawn.creative'
+        commands:
+        - '/creative'
+        - '/freebuild'
+        - '/build'
+        location:
+            x: 0.00
+            y: 0.00
+            z: 0.00
+            pitch: 0.0
+            yaw: 0.0
+            world: 'world'
