@@ -22,7 +22,7 @@ import java.util.Map;
 /** Why are you viewing this? */
 public class Spawn extends JavaPlugin
 {
-    Map<String, Warp> warps;
+    private Map<String, Warp> warps;
 
 
 
@@ -64,7 +64,7 @@ public class Spawn extends JavaPlugin
 
 
 
-    class CMD_SetLocation implements CommandExecutor
+    private class CMD_SetLocation implements CommandExecutor
     {
         public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args)
         {
@@ -102,7 +102,7 @@ public class Spawn extends JavaPlugin
 
 
 
-    class CMD_Locations implements CommandExecutor
+    private class CMD_Locations implements CommandExecutor
     {
 
         @Override
@@ -149,7 +149,7 @@ public class Spawn extends JavaPlugin
 
 
 
-    public void loadWarps()
+    void loadWarps()
     {
         ConfigurationSection cs = getConfig().getConfigurationSection("locations");
         for (String key : cs.getKeys(false))
@@ -177,7 +177,7 @@ public class Spawn extends JavaPlugin
 
 
 
-    class EVT_Warp implements Listener
+    private class EVT_Warp implements Listener
     {
         @EventHandler
         public void onCommand(PlayerCommandPreprocessEvent e)
@@ -204,11 +204,11 @@ public class Spawn extends JavaPlugin
 
     class Warp
     {
-        String name;
-        String message;
-        String permission;
+        final String name;
+        final String message;
+        final String permission;
         Location location;
-        List<String> commands;
+        final List<String> commands;
 
 
 
