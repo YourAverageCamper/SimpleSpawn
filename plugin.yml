@@ -4,3 +4,5 @@ main: com.zeusallmighty11.Spawn.Spawn
 commands:
     setlocation:
         description: Sets spawn
+    locations:
+        description: Reloads
