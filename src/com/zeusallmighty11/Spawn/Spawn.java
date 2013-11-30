@@ -43,8 +43,114 @@ public class Spawn extends JavaPlugin
 
         // set spawn command
         getCommand("setlocation").setExecutor(new CMD_SetLocation());
+        getCommand("locations").setExecutor(new CMD_Locations());
 
 
+        loadWarps();
+
+        getServer().getPluginManager().registerEvents(new EVT_Warp(), this);
+    }
+
+
+
+    public void onDisable()
+    {
+        for (Warp warp : warps.values())
+        {
+            if (warp.getCommands().size() > 1)
+                warp.save();
+        }
+    }
+
+
+
+    class CMD_SetLocation implements CommandExecutor
+    {
+        public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args)
+        {
+            if (!(cs instanceof Player))
+                return false;
+
+            Player p = (Player) cs;
+
+            if (!p.hasPermission("spawn.setlocation"))
+            {
+                p.sendMessage("§cYou do not have permission to set locations!");
+                return false;
+            }
+
+            if (args.length != 1)
+            {
+                p.sendMessage("§cInvalid command! Try /setlocation <name>");
+                return false;
+            }
+
+            if (!warps.containsKey(args[0]))
+            {
+                Warp warp = new Warp(args[0], "&bUnder the sea. &e<Default Message>", "my.perm.node", p.getLocation(), Arrays.asList(""));
+                warps.put(args[0], warp);
+                warp.save();
+                p.sendMessage("§aCreated location: " + args[0] + "!");
+            } else
+            {
+                warps.get(args[0]).setLocation(p.getLocation());
+                p.sendMessage("§aUpdated location for " + args[0] + "!");
+            }
+            return false;
+        }
+    }
+
+
+
+    class CMD_Locations implements CommandExecutor
+    {
+
+        @Override
+        public boolean onCommand(CommandSender cs, Command command, String s, String[] args)
+        {
+            if (!(cs instanceof Player))
+                return false;
+
+            Player p = (Player) cs;
+
+            if (!p.hasPermission("spawn.locations"))
+            {
+                p.sendMessage("§cYou do not have permission to set locations!");
+                return false;
+            }
+
+            if (args.length != 1)
+            {
+                p.sendMessage("§cInvalid command! Try /locations reload | /locations list");
+                return false;
+            }
+
+            if (args[0].equalsIgnoreCase("reload"))
+            {
+                reloadConfig();
+                warps.clear();
+                loadWarps();
+
+                p.sendMessage("§aLocations config reloaded.");
+                return false;
+            } else if (args[0].equalsIgnoreCase("list"))
+            {
+                for (Warp w : warps.values())
+                {
+                    p.sendMessage(w.getName() + " || " + w.getCommands());
+                }
+                return false;
+            }
+
+
+            return false;
+        }
+    }
+
+
+
+    public void loadWarps()
+    {
         ConfigurationSection cs = getConfig().getConfigurationSection("locations");
         for (String key : cs.getKeys(false))
         {
@@ -66,63 +172,6 @@ public class Spawn extends JavaPlugin
 
             Warp warp = new Warp(name, msg, perm, loc, commands);
             warps.put(name, warp);
-        }
-
-        getServer().getPluginManager().registerEvents(new EVT_Warp(), this);
-    }
-
-
-
-    public void onDisable()
-    {
-        for (Warp warp : warps.values())
-        {
-            getConfig().set("locations." + warp.getName() + ".message", warp.getMessage());
-            getConfig().set("locations." + warp.getName() + ".permission", warp.getPermission());
-            getConfig().set("locations." + warp.getName() + ".commands", warp.getCommands());
-            getConfig().set("locations." + warp.getName() + ".location.x", warp.getLocation().getX());
-            getConfig().set("locations." + warp.getName() + ".location.y", warp.getLocation().getY());
-            getConfig().set("locations." + warp.getName() + ".location.z", warp.getLocation().getZ());
-            getConfig().set("locations." + warp.getName() + ".location.pitch", warp.getLocation().getPitch());
-            getConfig().set("locations." + warp.getName() + ".location.yaw", warp.getLocation().getYaw());
-            getConfig().set("locations." + warp.getName() + ".location.world", warp.getLocation().getWorld().getName());
-        }
-        saveConfig();
-    }
-
-
-
-    class CMD_SetLocation implements CommandExecutor
-    {
-        public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args)
-        {
-            if (!(cs instanceof Player))
-                return false;
-            Player p = (Player) cs;
-
-            if (!p.hasPermission("spawn.setlocation"))
-            {
-                p.sendMessage("§cYou do not have permission to set locations!");
-                return false;
-            }
-
-            if (args.length != 1)
-            {
-                p.sendMessage("§cInvalid command! Try /setlocation <name>");
-                return false;
-            }
-
-            if (!warps.containsKey(args[0]))
-            {
-                warps.put(args[0], new Warp(args[0], "abc", "test.perm", p.getLocation(), Arrays.asList("")));
-                p.sendMessage("§aCreated location: " + args[0] + "!");
-            } else
-            {
-                warps.get(args[0]).setLocation(p.getLocation());
-                p.sendMessage("§aUpdated location for " + args[0] + "!");
-            }
-
-            return false;
         }
     }
 
@@ -212,6 +261,23 @@ public class Spawn extends JavaPlugin
         public void setLocation(Location loc)
         {
             this.location = loc;
+            save();
+        }
+
+
+
+        public void save()
+        {
+            getConfig().set("locations." + this.getName() + ".message", this.getMessage());
+            getConfig().set("locations." + this.getName() + ".permission", this.getPermission());
+            getConfig().set("locations." + this.getName() + ".commands", this.getCommands());
+            getConfig().set("locations." + this.getName() + ".location.x", this.getLocation().getX());
+            getConfig().set("locations." + this.getName() + ".location.y", this.getLocation().getY());
+            getConfig().set("locations." + this.getName() + ".location.z", this.getLocation().getZ());
+            getConfig().set("locations." + this.getName() + ".location.pitch", this.getLocation().getPitch());
+            getConfig().set("locations." + this.getName() + ".location.yaw", this.getLocation().getYaw());
+            getConfig().set("locations." + this.getName() + ".location.world", this.getLocation().getWorld().getName());
+            saveConfig();
         }
     }
 
